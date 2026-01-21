@@ -76,6 +76,78 @@ export const boardReducer = (state: BoardState, action: BoardAction): BoardState
       })
       return { ...state, columns: nextColumns }
     }
+    case 'deleteTask': {
+      const { columnId, taskId } = action.payload
+      const nextColumns = state.columns.map((col) =>
+        col.id === columnId
+          ? { ...col, tasks: col.tasks.filter((task) => task.id !== taskId) }
+          : col,
+      )
+      return { ...state, columns: nextColumns }
+    }
+    case 'editTask': {
+      const { columnId, taskId, title, description } = action.payload
+      const trimmedTitle = title.trim()
+      const trimmedDescription = description?.trim()
+      if (!trimmedTitle) return state
+      const nextColumns = state.columns.map((col) => {
+        if (col.id !== columnId) return col
+        return {
+          ...col,
+          tasks: col.tasks.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  title: trimmedTitle,
+                  ...(trimmedDescription !== undefined ? { description: trimmedDescription } : {}),
+                }
+              : task,
+          ),
+        }
+      })
+      return { ...state, columns: nextColumns }
+    }
+    case 'editColumn': {
+      const { columnId, name } = action.payload
+      const trimmedName = name.trim()
+      if (!trimmedName) return state
+      return {
+        ...state,
+        columns: state.columns.map((col) =>
+          col.id === columnId ? { ...col, name: trimmedName } : col,
+        ),
+      }
+    }
+    case 'deleteColumn': {
+      const { columnId } = action.payload
+      return { ...state, columns: state.columns.filter((col) => col.id !== columnId) }
+    }
+    case 'moveTask': {
+      const { fromColumnId, toColumnId, taskId } = action.payload
+      if (fromColumnId === toColumnId) return state
+
+      let taskToMove: Task | null = null
+
+      const columnsWithoutTask = state.columns.map((col) => {
+        if (col.id !== fromColumnId) return col
+        const remainingTasks = col.tasks.filter((task) => {
+          if (task.id === taskId) {
+            taskToMove = task
+            return false
+          }
+          return true
+        })
+        return { ...col, tasks: remainingTasks }
+      })
+
+      if (!taskToMove) return state
+
+      const columnsWithTaskMoved = columnsWithoutTask.map((col) =>
+        col.id === toColumnId ? { ...col, tasks: [...col.tasks, taskToMove!] } : col,
+      )
+
+      return { ...state, columns: columnsWithTaskMoved }
+    }
     default:
       return state
   }

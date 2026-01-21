@@ -23,3 +23,11 @@ export type BoardAction =
   | { type: 'renameColumn'; payload: { id: ColumnId; name: string } }
   | { type: 'reorderColumns'; payload: { fromIndex: number; toIndex: number } }
   | { type: 'addTask'; payload: { columnId: ColumnId; title: string; description?: string } }
+  | { type: 'deleteTask'; payload: { columnId: ColumnId; taskId: string } }
+  | {
+      type: 'editTask'
+      payload: { columnId: ColumnId; taskId: string; title: string; description?: string }
+    }
+  | { type: 'editColumn'; payload: { columnId: ColumnId; name: string } }
+  | { type: 'deleteColumn'; payload: { columnId: ColumnId } }
+  | { type: 'moveTask'; payload: { fromColumnId: ColumnId; toColumnId: ColumnId; taskId: string } }

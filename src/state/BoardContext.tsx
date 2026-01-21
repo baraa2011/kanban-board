@@ -8,7 +8,7 @@ import {
   useReducer,
 } from 'react'
 import { boardReducer, initialBoardState } from './boardReducer'
-import type { BoardAction, BoardState, Task } from '../types/board'
+import type { BoardAction, BoardState, Task, Column } from '../types/board'
 
 type BoardContextValue = {
   state: BoardState
@@ -26,7 +26,7 @@ const loadPersistedState = (fallback: BoardState) => {
     const parsed = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object') return fallback
     if (!Array.isArray(parsed.columns)) return fallback
-    const columns = parsed.columns.map((col: unknown) => {
+    const columns: Array<Column | null> = parsed.columns.map((col: unknown) => {
       if (!col || typeof col !== 'object') return null
       const id = (col as { id?: string }).id
       const name = (col as { name?: string }).name
@@ -55,7 +55,7 @@ const loadPersistedState = (fallback: BoardState) => {
       if (typeof id !== 'string' || typeof name !== 'string') return null
       return { id, name, tasks }
     })
-    if (columns.some((col) => col === null)) return fallback
+    if (columns.some((col: Column | null) => col === null)) return fallback
     return { ...fallback, ...parsed, columns } satisfies BoardState
   } catch {
     return fallback
