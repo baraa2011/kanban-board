@@ -1,4 +1,4 @@
-import type { BoardAction, BoardState, Column } from '../types/board'
+import type { BoardAction, BoardState, Column, Task } from '../types/board'
 
 const reorder = (list: Column[], fromIndex: number, toIndex: number) => {
   const next = [...list]
@@ -9,40 +9,40 @@ const reorder = (list: Column[], fromIndex: number, toIndex: number) => {
 
 export const initialBoardState: BoardState = {
   columns: [
-    { id: 'backlog', title: 'Backlog' },
-    { id: 'in-progress', title: 'In Progress' },
-    { id: 'review', title: 'Review' },
-    { id: 'done', title: 'Done' },
+    { id: 'backlog', name: 'Backlog', tasks: [] },
+    { id: 'in-progress', name: 'In Progress', tasks: [] },
+    { id: 'review', name: 'Review', tasks: [] },
+    { id: 'done', name: 'Done', tasks: [] },
   ],
 }
 
 export const boardReducer = (state: BoardState, action: BoardAction): BoardState => {
   switch (action.type) {
     case 'addColumn': {
-      const title = action.payload.title.trim()
-      if (!title) {
+      const name = action.payload.name.trim()
+      if (!name) {
         return state
       }
-      const id = title.toLowerCase().replace(/\s+/g, '-')
+      const id = name.toLowerCase().replace(/\s+/g, '-')
       const exists = state.columns.some((col) => col.id === id)
       if (exists) {
         return state
       }
-      const column: Column = { id, title }
+      const column: Column = { id, name, tasks: [] }
       return { ...state, columns: [...state.columns, column] }
     }
     case 'removeColumn': {
       return { ...state, columns: state.columns.filter((col) => col.id !== action.payload.id) }
     }
     case 'renameColumn': {
-      const title = action.payload.title.trim()
-      if (!title) {
+      const name = action.payload.name.trim()
+      if (!name) {
         return state
       }
       return {
         ...state,
         columns: state.columns.map((col) =>
-          col.id === action.payload.id ? { ...col, title } : col,
+          col.id === action.payload.id ? { ...col, name } : col,
         ),
       }
     }
@@ -58,6 +58,23 @@ export const boardReducer = (state: BoardState, action: BoardAction): BoardState
         return state
       }
       return { ...state, columns: reorder(state.columns, fromIndex, toIndex) }
+    }
+    case 'addTask': {
+      const { columnId, title, description } = action.payload
+      const trimmedTitle = title.trim()
+      const trimmedDescription = description?.trim()
+      if (!trimmedTitle) return state
+      const nextColumns = state.columns.map((col) => {
+        if (col.id !== columnId) return col
+        const newTask: Task = {
+          id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`,
+          title: trimmedTitle,
+          ...(trimmedDescription ? { description: trimmedDescription } : {}),
+          createdAt: Date.now(),
+        }
+        return { ...col, tasks: [...col.tasks, newTask] }
+      })
+      return { ...state, columns: nextColumns }
     }
     default:
       return state

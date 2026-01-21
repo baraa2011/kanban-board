@@ -8,7 +8,7 @@ import {
   useReducer,
 } from 'react'
 import { boardReducer, initialBoardState } from './boardReducer'
-import type { BoardAction, BoardState } from '../types/board'
+import type { BoardAction, BoardState, Task } from '../types/board'
 
 type BoardContextValue = {
   state: BoardState
@@ -26,7 +26,37 @@ const loadPersistedState = (fallback: BoardState) => {
     const parsed = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object') return fallback
     if (!Array.isArray(parsed.columns)) return fallback
-    return { ...fallback, ...parsed, columns: parsed.columns } satisfies BoardState
+    const columns = parsed.columns.map((col: unknown) => {
+      if (!col || typeof col !== 'object') return null
+      const id = (col as { id?: string }).id
+      const name = (col as { name?: string }).name
+      const tasksRaw = (col as { tasks?: unknown }).tasks
+      const tasks: Task[] = Array.isArray(tasksRaw)
+        ? tasksRaw
+            .map((task: unknown) => {
+              if (!task || typeof task !== 'object') return null
+              const taskId = (task as { id?: string }).id
+              const title = (task as { title?: string }).title
+              const description = (task as { description?: string }).description
+              const createdAt = (task as { createdAt?: number }).createdAt
+              if (
+                typeof taskId !== 'string' ||
+                typeof title !== 'string' ||
+                typeof createdAt !== 'number'
+              ) {
+                return null
+              }
+              return description && typeof description === 'string'
+                ? { id: taskId, title, description, createdAt }
+                : { id: taskId, title, createdAt }
+            })
+            .filter((task): task is Task => Boolean(task))
+        : []
+      if (typeof id !== 'string' || typeof name !== 'string') return null
+      return { id, name, tasks }
+    })
+    if (columns.some((col) => col === null)) return fallback
+    return { ...fallback, ...parsed, columns } satisfies BoardState
   } catch {
     return fallback
   }
