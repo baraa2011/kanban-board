@@ -1,0 +1,148 @@
+#root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: #0f172a;
+}
+
+body {
+  background: radial-gradient(circle at 10% 20%, #f8fafc 0, #e2e8f0 25%, #f8fafc 50%);
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.board__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.board__header h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.board__summary {
+  margin: 0;
+  color: #475569;
+  font-weight: 500;
+}
+
+.board__form {
+  display: grid;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.board__form-label {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.board__form-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.board__input {
+  flex: 1;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.board__input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.board__button {
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.board__button:hover {
+  background: #111827;
+  box-shadow: 0 8px 15px rgba(15, 23, 42, 0.15);
+  transform: translateY(-1px);
+}
+
+.board__button:disabled {
+  background: #cbd5e1;
+  color: #475569;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.board__columns {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.25rem 0.75rem;
+  margin: 0 -0.25rem;
+  scroll-snap-type: x mandatory;
+}
+
+.column {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  min-height: 180px;
+  min-width: 260px;
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+}
+
+.column__title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.column__empty {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  #root {
+    padding: 1.25rem;
+  }
+
+  .board__columns {
+    gap: 0.75rem;
+  }
+
+  .column {
+    min-width: 240px;
+    flex-basis: 250px;
+  }
+}
