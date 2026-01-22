@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { useDroppable } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { Column as ColumnType } from '../types/board'
 import { useBoard } from '../state/BoardContext'
 import { NewTaskForm } from './NewTaskForm'
-import { TaskCard } from './TaskCard'
+import { SortableTaskCard } from './SortableTaskCard'
 
 type Props = {
   column: ColumnType
@@ -14,6 +16,10 @@ export const Column = ({ column }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const [draftName, setDraftName] = useState(column.name)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { setNodeRef, isOver } = useDroppable({
+    id: column.id,
+    data: { type: 'column', columnId: column.id },
+  })
 
   useEffect(() => {
     if (isEditing) {
@@ -46,7 +52,12 @@ export const Column = ({ column }: Props) => {
   }
 
   return (
-    <article className="column bg-white border border-slate-200 rounded-xl p-4 shadow-md min-h-[180px] min-w-[260px] flex-0 basis-[280px] snap-start space-y-4">
+    <article
+      ref={setNodeRef}
+      className={`column bg-white border border-slate-200 rounded-xl p-4 shadow-md min-h-[180px] min-w-[260px] flex-0 basis-[280px] snap-start space-y-4 ${
+        isOver ? 'ring-2 ring-indigo-200' : ''
+      }`}
+    >
       <div className="column__title flex items-center justify-between gap-2">
         {isEditing ? (
           <input
@@ -98,15 +109,24 @@ export const Column = ({ column }: Props) => {
 
       <NewTaskForm columnId={column.id} />
 
-      {!hasTasks ? (
-        <div className="column__empty text-slate-400 text-sm">No tasks</div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {column.tasks.map((task) => (
-            <TaskCard key={task.id} task={task} columnId={column.id} />
-          ))}
+      <SortableContext
+        items={column.tasks.map((task) => task.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div
+          className={`flex flex-col gap-3 min-h-[80px] rounded-md border border-dashed border-transparent ${
+            isOver ? 'border-indigo-200 bg-indigo-50/50' : 'border-transparent'
+          }`}
+        >
+          {hasTasks ? (
+            column.tasks.map((task) => (
+              <SortableTaskCard key={task.id} task={task} columnId={column.id} />
+            ))
+          ) : (
+            <div className="column__empty text-slate-400 text-sm">No tasks</div>
+          )}
         </div>
-      )}
+      </SortableContext>
     </article>
   )
 }

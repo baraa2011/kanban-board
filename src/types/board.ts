@@ -28,6 +28,17 @@ export type BoardAction =
       type: 'editTask'
       payload: { columnId: ColumnId; taskId: string; title: string; description?: string }
     }
+  | {
+      type: 'EDIT_TASK'
+      payload: { columnId: ColumnId; taskId: string; title: string; description?: string }
+    }
   | { type: 'editColumn'; payload: { columnId: ColumnId; name: string } }
   | { type: 'deleteColumn'; payload: { columnId: ColumnId } }
   | { type: 'moveTask'; payload: { fromColumnId: ColumnId; toColumnId: ColumnId; taskId: string } }
+  | { type: 'MOVE_TASK'; payload: { fromColumnId: ColumnId; toColumnId: ColumnId; taskId: string } }
+  | {
+      type: 'reorderTasksInColumn'
+      payload: { columnId: ColumnId; orderedTaskIds: string[] }
+    }
+  | { type: 'deleteTask'; payload: { columnId: ColumnId; taskId: string } }
+  | { type: 'DELETE_TASK'; payload: { columnId: ColumnId; taskId: string } }

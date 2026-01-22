@@ -24,7 +24,7 @@ export const TaskCard = ({ task, columnId }: Props) => {
 
   const handleDelete = () => {
     if (!window.confirm('Delete this task?')) return
-    dispatch({ type: 'deleteTask', payload: { columnId, taskId: task.id } })
+    dispatch({ type: 'DELETE_TASK', payload: { columnId, taskId: task.id } })
   }
 
   const handleSave = (event: FormEvent<HTMLFormElement>) => {
@@ -33,7 +33,7 @@ export const TaskCard = ({ task, columnId }: Props) => {
     const trimmedDescription = description.trim()
     if (!trimmedTitle) return
     dispatch({
-      type: 'editTask',
+      type: 'EDIT_TASK',
       payload: {
         columnId,
         taskId: task.id,
@@ -110,7 +110,11 @@ export const TaskCard = ({ task, columnId }: Props) => {
                 className="text-xs font-medium text-slate-500 hover:text-slate-700 disabled:text-slate-300"
                 aria-label="Move task to previous column"
                 disabled={!prevColumnId}
-                onClick={() => moveToColumn(prevColumnId)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  moveToColumn(prevColumnId)
+                }}
               >
                 ←
               </button>
@@ -119,7 +123,11 @@ export const TaskCard = ({ task, columnId }: Props) => {
                 className="text-xs font-medium text-slate-500 hover:text-slate-700 disabled:text-slate-300"
                 aria-label="Move task to next column"
                 disabled={!nextColumnId}
-                onClick={() => moveToColumn(nextColumnId)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  moveToColumn(nextColumnId)
+                }}
               >
                 →
               </button>
@@ -127,7 +135,11 @@ export const TaskCard = ({ task, columnId }: Props) => {
                 type="button"
                 className="text-xs font-medium text-slate-500 hover:text-slate-700"
                 aria-label="Edit task"
-                onClick={() => setIsEditing(true)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsEditing(true)
+                }}
               >
                 Edit
               </button>
@@ -135,7 +147,11 @@ export const TaskCard = ({ task, columnId }: Props) => {
                 type="button"
                 className="text-xs font-medium text-red-500 hover:text-red-600"
                 aria-label="Delete task"
-                onClick={handleDelete}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleDelete()
+                }}
               >
                 Delete
               </button>

@@ -76,7 +76,8 @@ export const boardReducer = (state: BoardState, action: BoardAction): BoardState
       })
       return { ...state, columns: nextColumns }
     }
-    case 'deleteTask': {
+    case 'deleteTask':
+    case 'DELETE_TASK': {
       const { columnId, taskId } = action.payload
       const nextColumns = state.columns.map((col) =>
         col.id === columnId
@@ -85,7 +86,8 @@ export const boardReducer = (state: BoardState, action: BoardAction): BoardState
       )
       return { ...state, columns: nextColumns }
     }
-    case 'editTask': {
+    case 'editTask':
+    case 'EDIT_TASK': {
       const { columnId, taskId, title, description } = action.payload
       const trimmedTitle = title.trim()
       const trimmedDescription = description?.trim()
@@ -122,7 +124,24 @@ export const boardReducer = (state: BoardState, action: BoardAction): BoardState
       const { columnId } = action.payload
       return { ...state, columns: state.columns.filter((col) => col.id !== columnId) }
     }
-    case 'moveTask': {
+    case 'reorderTasksInColumn': {
+      const { columnId, orderedTaskIds } = action.payload
+      return {
+        ...state,
+        columns: state.columns.map((col) => {
+          if (col.id !== columnId) return col
+          const tasksById = new Map(col.tasks.map((task) => [task.id, task]))
+          const reordered = orderedTaskIds
+            .map((id) => tasksById.get(id))
+            .filter((task): task is Task => Boolean(task))
+
+          const remaining = col.tasks.filter((task) => !orderedTaskIds.includes(task.id))
+          return { ...col, tasks: [...reordered, ...remaining] }
+        }),
+      }
+    }
+    case 'moveTask':
+    case 'MOVE_TASK': {
       const { fromColumnId, toColumnId, taskId } = action.payload
       if (fromColumnId === toColumnId) return state
 
