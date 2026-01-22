@@ -9,12 +9,12 @@ type Props = {
 }
 
 export const TaskCard = ({ task, columnId }: Props) => {
-  const { state, dispatch } = useBoard()
+  const { selectedBoard, dispatch } = useBoard()
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description ?? '')
 
-  const columns = state.columns
+  const columns = selectedBoard?.columns ?? []
   const currentIndex = columns.findIndex((col) => col.id === columnId)
   const prevColumnId = currentIndex > 0 ? columns[currentIndex - 1]?.id : undefined
   const nextColumnId =
@@ -63,7 +63,7 @@ export const TaskCard = ({ task, columnId }: Props) => {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition">
       {isEditing ? (
         <form className="flex flex-col gap-2" onSubmit={handleSave}>
           <input
@@ -103,11 +103,11 @@ export const TaskCard = ({ task, columnId }: Props) => {
       ) : (
         <>
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold text-slate-900">{task.title}</p>
+            <p className="text-sm font-semibold text-slate-900 line-clamp-2">{task.title}</p>
             <div className="flex gap-2">
               <button
                 type="button"
-                className="text-xs font-medium text-slate-500 hover:text-slate-700 disabled:text-slate-300"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-900 disabled:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 aria-label="Move task to previous column"
                 disabled={!prevColumnId}
                 onPointerDown={(e) => e.stopPropagation()}
@@ -120,7 +120,7 @@ export const TaskCard = ({ task, columnId }: Props) => {
               </button>
               <button
                 type="button"
-                className="text-xs font-medium text-slate-500 hover:text-slate-700 disabled:text-slate-300"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-900 disabled:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 aria-label="Move task to next column"
                 disabled={!nextColumnId}
                 onPointerDown={(e) => e.stopPropagation()}
@@ -133,7 +133,7 @@ export const TaskCard = ({ task, columnId }: Props) => {
               </button>
               <button
                 type="button"
-                className="text-xs font-medium text-slate-500 hover:text-slate-700"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 aria-label="Edit task"
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
@@ -145,7 +145,7 @@ export const TaskCard = ({ task, columnId }: Props) => {
               </button>
               <button
                 type="button"
-                className="text-xs font-medium text-red-500 hover:text-red-600"
+                className="text-xs font-semibold text-red-500 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                 aria-label="Delete task"
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
@@ -158,7 +158,9 @@ export const TaskCard = ({ task, columnId }: Props) => {
             </div>
           </div>
           {task.description && (
-            <p className="mt-2 text-xs text-slate-600 line-clamp-2">{task.description}</p>
+            <p className="mt-2 text-sm text-slate-600 line-clamp-2 leading-relaxed">
+              {task.description}
+            </p>
           )}
         </>
       )}

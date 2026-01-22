@@ -17,14 +17,14 @@ export const SortableTaskCard = ({ task, columnId }: Props) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.7 : 1,
+    opacity: isDragging ? 0.9 : 1,
   }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`${isDragging ? 'ring-2 ring-indigo-200 shadow-lg' : ''}`}
+      className={`${isDragging ? 'ring-2 ring-indigo-200 shadow-lg scale-[0.98]' : ''}`}
     >
       <div className="mb-2 flex justify-end">
         <button

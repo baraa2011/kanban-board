@@ -13,8 +13,15 @@ export type Column = {
   tasks: Task[]
 }
 
-export type BoardState = {
+export type Board = {
+  id: string
+  name: string
   columns: Column[]
+}
+
+export type BoardState = {
+  boards: Board[]
+  selectedBoardId: string
 }
 
 export type BoardAction =
@@ -42,3 +49,8 @@ export type BoardAction =
     }
   | { type: 'deleteTask'; payload: { columnId: ColumnId; taskId: string } }
   | { type: 'DELETE_TASK'; payload: { columnId: ColumnId; taskId: string } }
+  | { type: 'addBoard'; payload: { name: string } }
+  | { type: 'selectBoard'; payload: { boardId: string } }
+  | { type: 'ADD_BOARD'; payload: { name: string } }
+  | { type: 'SELECT_BOARD'; payload: { boardId: string } }
+  | { type: 'DELETE_BOARD'; payload: { boardId: string } }

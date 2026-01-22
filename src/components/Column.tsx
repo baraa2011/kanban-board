@@ -54,11 +54,11 @@ export const Column = ({ column }: Props) => {
   return (
     <article
       ref={setNodeRef}
-      className={`column bg-white border border-slate-200 rounded-xl p-4 shadow-md min-h-[180px] min-w-[260px] flex-0 basis-[280px] snap-start space-y-4 ${
+      className={`column bg-white/95 border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow min-h-[180px] min-w-[260px] flex-shrink-0 flex-0 basis-[280px] snap-start space-y-3 ${
         isOver ? 'ring-2 ring-indigo-200' : ''
       }`}
     >
-      <div className="column__title flex items-center justify-between gap-2">
+      <div className="column__title sticky top-0 z-10 flex items-center justify-between gap-2 bg-white pb-2">
         {isEditing ? (
           <input
             ref={inputRef}
@@ -84,7 +84,7 @@ export const Column = ({ column }: Props) => {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="text-xs font-medium text-slate-500 hover:text-slate-700"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 aria-label="Edit column"
                 onClick={startEdit}
                 onDoubleClick={startEdit}
@@ -93,7 +93,7 @@ export const Column = ({ column }: Props) => {
               </button>
               <button
                 type="button"
-                className="text-xs font-medium text-red-500 hover:text-red-600"
+                className="text-xs font-semibold text-red-500 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                 aria-label="Delete column"
                 onClick={() => {
                   if (!window.confirm('Delete this column and all tasks?')) return

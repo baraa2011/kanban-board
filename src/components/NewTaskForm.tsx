@@ -36,7 +36,7 @@ export const NewTaskForm = ({ columnId }: Props) => {
   }
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-slate-700" htmlFor={`${columnId}-title`}>
           Title
@@ -69,13 +69,15 @@ export const NewTaskForm = ({ columnId }: Props) => {
         />
       </div>
 
-      <button
-        type="submit"
-        className="self-start rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
-        disabled={!title.trim()}
-      >
-        Add Task
-      </button>
+      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+        <button
+          type="submit"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 md:w-auto w-full"
+          disabled={!title.trim()}
+        >
+          Add Task
+        </button>
+      </div>
     </form>
   )
 }

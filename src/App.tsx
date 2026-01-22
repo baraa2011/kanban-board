@@ -5,13 +5,12 @@ import { NewColumnForm } from './components/NewColumnForm'
 import { Board } from './components/Board'
 
 function App() {
-  const {
-    state: { columns },
-  } = useBoard()
+  const { selectedBoard } = useBoard()
+  const columns = selectedBoard?.columns ?? []
 
   return (
-    <main className="board max-w-screen-xl mx-auto px-6 space-y-4">
-      <Header title="Kanban Board" />
+    <main className="board max-w-screen-xl mx-auto px-6 space-y-6">
+      <Header title={selectedBoard?.name ?? 'Kanban Board'} />
       <NewColumnForm />
       <Board columns={columns} />
     </main>
