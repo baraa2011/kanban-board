@@ -8,18 +8,21 @@ import { SortableTaskCard } from './SortableTaskCard'
 
 type Props = {
   column: ColumnType
+  searchQuery?: string
 }
 
-export const Column = ({ column }: Props) => {
+export const Column = ({ column, searchQuery = '' }: Props) => {
   const { dispatch } = useBoard()
   const hasTasks = column.tasks.length > 0
   const [isEditing, setIsEditing] = useState(false)
   const [draftName, setDraftName] = useState(column.name)
+  const [sortMode, setSortMode] = useState<'none' | 'name' | 'newest'>('none')
   const inputRef = useRef<HTMLInputElement>(null)
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
     data: { type: 'column', columnId: column.id },
   })
+  const dragDisabled = sortMode !== 'none' || Boolean(searchQuery)
 
   useEffect(() => {
     if (isEditing) {
@@ -102,6 +105,15 @@ export const Column = ({ column }: Props) => {
               >
                 Delete
               </button>
+              <select
+                className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                value={sortMode}
+                onChange={(e) => setSortMode(e.target.value as 'none' | 'name' | 'newest')}
+              >
+                <option value="none">None</option>
+                <option value="name">Name</option>
+                <option value="newest">Newest</option>
+              </select>
             </div>
           </>
         )}
@@ -115,15 +127,49 @@ export const Column = ({ column }: Props) => {
       >
         <div
           className={`flex flex-col gap-3 min-h-[80px] rounded-md border border-dashed border-transparent ${
-            isOver ? 'border-indigo-200 bg-indigo-50/50' : 'border-transparent'
+            isOver && !dragDisabled ? 'border-indigo-200 bg-indigo-50/50' : 'border-transparent'
           }`}
         >
           {hasTasks ? (
-            column.tasks.map((task) => (
-              <SortableTaskCard key={task.id} task={task} columnId={column.id} />
-            ))
+            (() => {
+              const filtered = column.tasks.filter((task) =>
+                searchQuery ? task.title.toLowerCase().includes(searchQuery.toLowerCase()) : true,
+              )
+              const sorted =
+                sortMode === 'none'
+                  ? filtered
+                  : [...filtered].sort((a, b) => {
+                      if (sortMode === 'name') return a.title.localeCompare(b.title)
+                      if (sortMode === 'newest') return b.createdAt - a.createdAt
+                      return 0
+                    })
+              return sorted.map((task) =>
+                dragDisabled ? (
+                  <div
+                    key={task.id}
+                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold text-slate-900 line-clamp-2">
+                        {task.title}
+                      </p>
+                    </div>
+                    {task.description && (
+                      <p className="mt-2 text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                        {task.description}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <SortableTaskCard key={task.id} task={task} columnId={column.id} />
+                ),
+              )
+            })()
           ) : (
             <div className="column__empty text-slate-400 text-sm">No tasks</div>
+          )}
+          {dragDisabled && hasTasks && (
+            <p className="text-xs text-slate-500">Sorting/search active — drag disabled</p>
           )}
         </div>
       </SortableContext>

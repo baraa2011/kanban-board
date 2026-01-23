@@ -18,9 +18,10 @@ import { TaskCard } from './TaskCard'
 
 type Props = {
   columns: ColumnType[]
+  searchQuery?: string
 }
 
-export const Board = ({ columns }: Props) => {
+export const Board = ({ columns, searchQuery = '' }: Props) => {
   const { dispatch } = useBoard()
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
@@ -110,7 +111,7 @@ export const Board = ({ columns }: Props) => {
     >
       <section className="board__columns flex flex-nowrap gap-4 overflow-x-auto px-1 py-2 -mx-1 snap-x snap-mandatory">
         {columns.map((column) => (
-          <Column key={column.id} column={column} />
+          <Column key={column.id} column={column} searchQuery={searchQuery} />
         ))}
       </section>
       <DragOverlay>
